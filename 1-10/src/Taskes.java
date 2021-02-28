@@ -1,4 +1,4 @@
-import java.util.Scanner;
+ import java.util.Scanner;
 public class Taskes {
     public static void main(String[] args) {
         int a, b, min, two, three, win, draws, losses, num;
