@@ -37,13 +37,11 @@ public class Tasks {
         parityAnalis(3);
         parityAnalis(12);
     }
-    public static void millionsRounding(String s1, int a,String s2, int b,String s3, int c,String s4, int d){
-        public static Object[][] millionsRounding(Object[][] arr) {
-            for (int i = 0; i < arr.length; i++) {
-                arr[i][1] = Math.round((double) ((int) arr[i][1]) / 1000000) * 1000000;
-            }
-            return arr;
+    public static Object[][] millionsRounding(Object[][] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            arr[i][1] = Math.round((double) ((int) arr[i][1]) / 1000000) * 1000000;
         }
+        return arr;
     }
     public static void otherSides(int a){
         System.out.println("[" + (double)a*2 + ", " + (double) a*Math.sqrt(3) + "]");
@@ -89,9 +87,9 @@ public class Tasks {
         String str = "";
         for(int i = 0; i <s1.length(); i++){
             if((int)s1.charAt(i)<91 &&(int)s1.charAt(i)>64)
-                str+= Character.toUpperCase(s1.charAt(i));
-            else if((int)s1.charAt(i)<123 &&(int)s1.charAt(i)>96)
                 str+= Character.toLowerCase(s1.charAt(i));
+            else if((int)s1.charAt(i)<123 &&(int)s1.charAt(i)>96)
+                str+= Character.toUpperCase(s1.charAt(i));
             else
                 str+= s1.charAt(i);
         }
