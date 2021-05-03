@@ -1,35 +1,23 @@
 import java.io.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class Tasks {
     public static void main(String args[]){
         System.out.println("==1 quest==");
         System.out.println(sameLetterPattern("ABAB","CDCD"));
-        System.out.println(sameLetterPattern("CDCD","FFGG"));
         System.out.println("==2 quest==");
-//        System.out.println(spiderVsFly("H3", "E2"));
-//        System.out.println(spiderVsFly("A4", "B2"));
-//        System.out.println(spiderVsFly("A4", "C2"));
-//        System.out.println(spiderVsFly("A4", "A2"));
-//        System.out.println(spiderVsFly("A4", "C4"));
+        System.out.println(spiderVsFly("H3", "E2"));
         System.out.println("==3 quest==");
-        System.out.println(digitsCount(4666));
-        System.out.println(digitsCount(544));
         System.out.println(digitsCount(121317));
         System.out.println("==4 quest==");
-        totalPoints(new String[] {"cat", "create", "sat"}, "caster");
-        totalPoints(new String[] {"trance", "recant"}, "recant");
         totalPoints(new String[] {"dote", "dotes", "toes", "set","dot","dots","sted"}, "tossed");
         System.out.println("==5 quest==");
-        System.out.println(longestRun(new int[] {1,2,3,5,6,7,8,9}));
-        System.out.println(longestRun(new int[] {1,2,3,10,11,15}));
-        System.out.println(longestRun(new int[] {5,4,2,1}));
         System.out.println(longestRun(new int[] {3,5,7,10,15}));
         System.out.println("==6 quest==");
-        takeDownAverage(new String[] {"10"});
-        takeDownAverage(new String[] {"53","79"});
         takeDownAverage(new String[] {"95","83","90","87","88","93"});
         System.out.println("==7 quest==");
-        rearrange("Tesh3 th5e 1I lov2e way6 she7 j4ust i8s.");
-        rearrange("the4 t3o man5 Happ1iest of6 no7 birt2hday steel8!");
         rearrange("is2 Thi1s T4est 3a");
         rearrange(" ");
         System.out.println("==8 quest==");
@@ -38,14 +26,8 @@ public class Tasks {
         maxPossible(9132,5564);
         maxPossible(8732,91255);
         System.out.println("==9 quest==");
-        timeDifference("Los Angeles", "April 1, 2011 23:23", "Canberra");
-        timeDifference("London", "July 31, 1983 23:01", "Rome");
         timeDifference("New York", "December 31, 1970 13:40", "Beijing");
         System.out.println("==10 quest==");
-        System.out.println(isNew(3));
-        System.out.println(isNew(30));
-        System.out.println(isNew(123));
-        System.out.println(isNew(321));
         System.out.println(isNew(869));
         System.out.println(isNew(509));
     }
@@ -76,77 +58,84 @@ public class Tasks {
         }
     //2
     public static String spiderVsFly(String a, String b) {
-        int xSpider = a.charAt(0) - 65;
-        int ySpider = a.charAt(1) - 48;
-
-        int xFly = b.charAt(0) - 65;
-        int yFly = b.charAt(1) - 48;
-
-        double diametrDist = (ySpider + yFly);
-        double leftDist = 0;
-        double rightDist = 0;
-
-        String path = "";
-        if (yFly < ySpider) {
-            leftDist = Math.abs(xSpider - xFly) * yFly * Math.sqrt(2);
-            rightDist = Math.abs(6 - xSpider + xFly) * yFly * Math.sqrt(2);
-        } else {
-            leftDist = Math.abs(xSpider - xFly) * ySpider * Math.sqrt(2);
-            rightDist = Math.abs(6 - xSpider + xFly) * ySpider * Math.sqrt(2);
-        }
-
-        if (diametrDist < leftDist && diametrDist < rightDist) {
-            for (int i = ySpider; i >= 0; i--) {
-                path += a.charAt(0) + Integer.toString(i) + "-";
-            }
-            for (int i = 1; i <= yFly; i++) {
-                path += b.charAt(0) + Integer.toString(i) + "-";
-            }
-        }
-        else if (leftDist < diametrDist && leftDist < rightDist) {
+//Тута получаем координаты паучка
+            int xSpider = a.charAt(0) - 65;
+            int ySpider = a.charAt(1) - 48;
+//А тута ~~летать~~ мухи
+            int xFly = b.charAt(0) - 65;
+            int yFly = b.charAt(1) - 48;
+//переменные для дистанций между пауком и летать
+            double diametrDist = (ySpider + yFly);
+            double leftDist = 0;
+            double rightDist = 0;
+//в зависимости от того, кто находится выше, находим путь по часовой стрелке и против неё
+            String path = "";
             if (yFly < ySpider) {
-                for (int i = ySpider; i >= ySpider - yFly; i--) {
-                    path += a.charAt(0) + Integer.toString(i) + '-';
-                }
-                for (int i = 1; i <= Math.abs(xFly - xSpider); i++) {
-                    path += (char) (i + 65) + Integer.toString(yFly) + '-';
-                }
+                leftDist = Math.abs(xSpider - xFly) * GetHorizontalLength(yFly);
+                rightDist = Math.abs(6 - xSpider + xFly) * GetHorizontalLength(yFly);
             } else {
-                for (int i = 0; i <= Math.abs(xFly - xSpider); i++) {
-                    path += (char) (i + 65) + Integer.toString(ySpider) + '-';
+                leftDist = Math.abs(xSpider - xFly) * GetHorizontalLength(ySpider);
+                rightDist = Math.abs(6 - xSpider + xFly) *GetHorizontalLength(ySpider);
+            }
+//Если диаметрально самый короткий путь, нарисуем его. Идём сначала к центру, потом от него.
+            if (diametrDist < leftDist && diametrDist < rightDist) {
+                for (int i = ySpider; i >= 0; i--) {
+                    path += a.charAt(0) + Integer.toString(i) + "-";
                 }
-                for (int i = ySpider + 1; i <= yFly; i++) {
-                    path += b.charAt(0) + Integer.toString(i) + '-';
+                for (int i = 1; i <= yFly; i++) {
+                    path += b.charAt(0) + Integer.toString(i) + "-";
                 }
             }
-        }
-        else {
-            if (yFly < ySpider) {
-                for (int i = ySpider; i >= ySpider - yFly; i--) {
-                    path += a.charAt(0) + Integer.toString(i) + '-';
-                }
-                for (int i = xSpider; i <= 5; i++) {
-                    path += (char) (i + 65) + Integer.toString(yFly) + '-';
-                }
-                for (int i = 0; i <= xFly; i++) {
-                    path += (char) (i + 65) + Integer.toString(yFly) + '-';
-                }
-            } else {
-                for (int i = xSpider; i <= 5; i++) {
-                    path += (char) (i + 65) + Integer.toString(ySpider) + '-';
-                }
-                for (int i = 0; i < xFly; i++) {
-                    path += (char) (i + 65) + Integer.toString(ySpider) + '-';
-                }
-                for (int i = ySpider + 1; i <= yFly; i++) {
-                    path += b.charAt(0) + Integer.toString(i) + '-';
+// Если против часовой стрелки наименьшая, сначала движемся по вертикали к меньшему кругу, идём по нему, а потом движемся по вертикали к цели
+// Но у меня сначала идёт выбор, какой из кругов меньше, а потом либо сначала по вертикали, а потом по кругу, либо сначала по кругу, потом по вертикали
+            else if (leftDist < diametrDist && leftDist < rightDist) {
+                if (yFly < ySpider) {
+                    for (int i = ySpider; i >= ySpider - yFly; i--) {
+                        path += a.charAt(0) + Integer.toString(i) + '-';
+                    }
+                    for (int i = 1; i <= Math.abs(xFly - xSpider); i++) {
+                        path += (char) (i + 65) + Integer.toString(yFly) + '-';
+                    }
+                } else {
+                    for (int i = 0; i <= Math.abs(xFly - xSpider); i++) {
+                        path += (char) (i + 65) + Integer.toString(ySpider) + '-';
+                    }
+                    for (int i = ySpider + 1; i <= yFly; i++) {
+                        path += b.charAt(0) + Integer.toString(i) + '-';
+                    }
                 }
             }
+// Ну и осталось только учесть тот момент, когда по часовой стрелке - наименьшая дистанция. Аналогично против часовой.
+// Тока тут ещё надо определить тот момент, когда павук касается 0. Тогда нада обратно вернуться
+            else {
+                if (yFly < ySpider) {
+                    for (int i = ySpider; i >= ySpider - yFly; i--) {
+                        path += a.charAt(0) + Integer.toString(i) + '-';
+                    }
+                    for (int i = xSpider; i <= 5; i++) {
+                        path += (char) (i + 65) + Integer.toString(yFly) + '-';
+                    }
+                    for (int i = 0; i <= xFly; i++) {
+                        path += (char) (i + 65) + Integer.toString(yFly) + '-';
+                    }
+                } else {
+                    for (int i = xSpider; i <= 5; i++) {
+                        path += (char) (i + 65) + Integer.toString(ySpider) + '-';
+                    }
+                    for (int i = 0; i < xFly; i++) {
+                        path += (char) (i + 65) + Integer.toString(ySpider) + '-';
+                    }
+                    for (int i = ySpider + 1; i <= yFly; i++) {
+                        path += b.charAt(0) + Integer.toString(i) + '-';
+                    }
+                }
+            }
+            path = path.substring(0, path.length() - 1);
+
+            return path;
         }
-
-        path = path.substring(0, path.length() - 1);
-
-        return path;
+    public static double GetHorizontalLength(double a){
+            return Math.sqrt(a*a*(2-Math.sqrt(2)));
     }
     //3
     public static int digitsCount(int a){
@@ -339,9 +328,9 @@ public class Tasks {
     }
     //9
     public static void timeDifference(String city1, String timestump, String city2){
-        String[] city = {"Los Angeles", "New York", "Caracas", "Buenos Aires", "London", "Rome", "" +
+        String[] city = {"Los Angeles", "New York", "Caracas", "Buenos Aires", "London", "Rome",
                 "Moscow","Tehran", "New Delhi","Beijing","Canberra"};
-        int[] diffGrinv = {-80, -50, -45, -30, 0, 10, 30, 35, 55, 80, 100};
+        int[] diffGrinv = {-80, -50, -45, -30, 0, 10, 30, 35, 55, 80, 100};//4,5
         boolean newDay = false, newMonth = false, newYear = false,newHour=false;
         String[] MonthDayYearTime = timestump.split(" ");
         //time;
@@ -369,7 +358,7 @@ public class Tasks {
             realdiff*=-1;
         }
         else if(GDiffCity2==realdiff){
-            System.out.println(timestump);//change to answer please
+            System.out.println(timestump);
         }
         hour+=realdiff/10;
         minute+=30*(realdiff%10);
@@ -440,31 +429,17 @@ public class Tasks {
                 result = i;
         }
         result++;
-        //System.out.println("whatMonth is " + result);
         return result;
     }
     //10
     public static boolean isNew(int a){
         int temp = a;
         int[] Nums = new int[digitsCount(a)];
-        int cont = 0;
         for(int i = 0; i<Nums.length;i++){
             Nums[i] = temp%10;
             temp/=10;
         }
-        int buf;
-        boolean isSorted = false;
-        while(!isSorted) {
-            isSorted = true;
-            for (int i = 0; i < Nums.length-1; i++) {
-                if(Nums[i] > Nums[i+1]){
-                    isSorted = false;
-                    buf = Nums[i];
-                    Nums[i] = Nums[i+1];
-                    Nums[i+1] = buf;
-                }
-            }
-        }
+        Arrays.sort(Nums);
         String NewA = "";
         if(Nums[0] == 0){
             int count = 1;
